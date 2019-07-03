@@ -26,23 +26,23 @@ func colorFromImage(_ image:UIImage, frame: CGRect) -> UIColor {
 
     let normImage = normalizedImage(image: image)
     var rect = frame
-    rect.origin.x*=normImage.scale
-    rect.origin.y*=normImage.scale
-    rect.size.width*=normImage.scale
-    rect.size.height*=normImage.scale
-    rect.origin.x = (normImage.size.width / 2) - (frame.width / 2)
-    rect.origin.y = (normImage.size.height / 2) - (frame.height / 2)
+//    print(frame)
+//    print(normImage.size)
+    let widthPct = frame.size.width / normImage.size.width
+    let heightPct = frame.size.height / normImage.size.height
+    let overallPct = widthPct > heightPct ? widthPct : heightPct
+//    print(widthPct, heightPct, overallPct)
+    rect.size.width /= overallPct
+    rect.size.height /= overallPct
+    rect.origin.x = (normImage.size.width / 2) - (rect.size.width / 2)
+    rect.origin.y = (normImage.size.height / 2) - (rect.size.height / 2)
+//    print(rect)
 
     if let imageRef = normImage.cgImage!.cropping(to: rect) { //was to: frame
-        let finalImage = UIImage(cgImage: imageRef) //Need to make the finalImage.imageOrientation the same as the original
+        let midImage = UIImage(cgImage: imageRef) //Need to make the finalImage.imageOrientation the same as the original
+        let finalImage = imageWith(image: midImage, newSize: frame.size)
         return UIColor(patternImage:finalImage)
     }
-    //UIImage(cgImage: imageRef!, scale: image.scale, orientation: image.imageOrientation)
-    //let finalImage = image.CGImageCroppingTo(frame)
-//    UIGraphicsBeginImageContext(frame.size)
-//    image.draw(in: frame)
-//    let finalImage = UIGraphicsGetImageFromCurrentImageContext()!
-//    UIGraphicsEndImageContext()
+
     return .red
 }
-

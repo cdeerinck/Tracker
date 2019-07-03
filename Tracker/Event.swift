@@ -64,7 +64,7 @@ class Event:Codable {
     var nextDate:Date = Date()
     var eventName:String = ""
     var eventPicture:UIImage?
-    var recursType:Recurs = .once
+    var recursType:Recurs = .everyXMonths
     var recursNumber:Int = 1
 
     var daysText:String {

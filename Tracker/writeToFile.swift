@@ -10,7 +10,7 @@ import Foundation
 
 
 
-func writeToFile() {
+func writeToFile(events:Events) {
     if let encodedData = try? JSONEncoder().encode(events) {
         let filename = getDocumentsDirectory().appendingPathComponent("Data.json")
         do {

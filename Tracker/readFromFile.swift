@@ -8,13 +8,15 @@
 
 import Foundation
 
-func readFromFile() {
+func readFromFile() -> Events {
     let filename = getDocumentsDirectory().appendingPathComponent("Data.json")
     do {
         let data = try Data(contentsOf: filename)
 
-        events = try JSONDecoder().decode(Events.self, from:data)
+        let events:Events = try JSONDecoder().decode(Events.self, from:data)
+        return events
         } catch {
             //error handling here...
         }
+        return Events()
 }

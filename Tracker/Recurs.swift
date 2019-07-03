@@ -7,12 +7,9 @@
 //
 
 enum Recurs : String, Codable {
-
-    case once
     case everyXDays
     case everyXMonths
     case everyXYears
-
 }
 
 

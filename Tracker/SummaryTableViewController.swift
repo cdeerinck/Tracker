@@ -11,32 +11,27 @@ import UIKit
 
 class SummaryTableViewController: UITableViewController {
 
-//class SummaryTableView: UITableView {
-
     @IBOutlet var summaryView: UITableView!
+    var events:Events = Events()
 
     override func viewDidLoad() {
-        readFromFile()
-
-        if events.eventArray.count == 0 {
-            events.eventArray.append(Event(eventName: "Alpha fools", nextDate: "04/01/2020", recursType: .everyXYears, recursNumber: 1))
-            events.eventArray.append(Event(eventName: "Beta weekly", nextDate: "02/01/2019", recursType: .everyXDays, recursNumber: 7))
-            events.eventArray.append(Event(eventName: "Gamma", nextDate: "08/05/2019", recursType: .once, recursNumber: 0))
-        }
+        events = readFromFile()
         events.eventArray.sort { $0.nextDate < $1.nextDate}
+        summaryView.rowHeight = 80
     }
 
     override func viewWillAppear(_ animated: Bool) {
         events.eventArray.sort() { $0.days < $1.days }
-        writeToFile()
+        writeToFile(events: events)
         summaryView.reloadData()
     }
-
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Summary Cell", for: indexPath)
         if events.eventArray[indexPath.row].eventPicture != nil {
             cell.backgroundColor = colorFromImage(events.eventArray[indexPath.row].eventPicture!, frame: cell.frame)
+        } else {
+            cell.backgroundColor = colorFromImage(UIImage(imageLiteralResourceName: "Theme 2"), frame: cell.frame)
         }
         if let daysLabel = cell.viewWithTag(1) as? UILabel {
             daysLabel.text = String(events.eventArray[indexPath.row].daysText)
@@ -61,14 +56,6 @@ class SummaryTableViewController: UITableViewController {
         return true
     }
 
-    @IBAction func addItem(_ sender: Any) {
-        events.eventArray.append(Event(eventName: "New Item", nextDate: "", recursType: .once, recursNumber: 1))
-        let indexPath = IndexPath(row: events.eventArray.count - 1, section: 0)
-        summaryView.beginUpdates()
-        summaryView.insertRows(at: [indexPath], with: .automatic)
-        summaryView.endUpdates()
-    }
-
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             events.eventArray.remove(at: indexPath.row)
@@ -86,19 +73,16 @@ class SummaryTableViewController: UITableViewController {
         }
     }
 
+    @IBAction func addItem(_ sender: Any) {
+        events.eventArray.append(Event(eventName: "New Item", nextDate: "", recursType: .everyXMonths, recursNumber: 1))
+        let indexPath = IndexPath(row: events.eventArray.count - 1, section: 0)
+        summaryView.beginUpdates()
+        summaryView.insertRows(at: [indexPath], with: .automatic)
+        summaryView.endUpdates()
+    }
+
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: "Summary to Detail", sender: self)
     }
 
-//override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-//    if let navigationController = segue.destination as? UINavigationController,
-//        let editContactViewController = navigationController.viewControllers.first as? EditContactViewController {
-//        editContactViewController.contact = contact
-//    }
-
-    @IBAction func unwindToThisViewController(segue: UIStoryboardSegue) {
-        if let editedIndexPath = summaryView.indexPathForSelectedRow {
-            tableView.reloadRows(at: [editedIndexPath], with: .fade)
-        }
-    }
 }
